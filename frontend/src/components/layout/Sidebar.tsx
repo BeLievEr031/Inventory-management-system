@@ -3,6 +3,13 @@
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
+import {
+    IconDashboard,
+    IconOperations,
+    IconStock,
+    IconHistory,
+    IconSettings,
+    IconChevronDown
 import { usePathname } from "next/navigation";
 import { 
     IconDashboard, 
@@ -71,6 +78,9 @@ const Sidebar = () => {
                             <div className="text-slate-300"><IconChevronDown /></div>
                         </button>
                         <div className="pl-12 space-y-3 mt-2">
+                            <Link className="block text-[13px] font-bold text-slate-400 hover:text-[#ec5b13] transition-colors cursor-pointer" href="/dashboard/receipts">Receipt</Link>
+                            <Link className="block text-[13px] font-bold text-slate-400 hover:text-[#ec5b13] transition-colors cursor-pointer" href="#">Delivery</Link>
+                            <Link className="block text-[13px] font-bold text-slate-400 hover:text-[#ec5b13] transition-colors cursor-pointer" href="#">Adjustment</Link>
                             <Link className={subLinkClass("#")} href="#">Receipt</Link>
                             <Link className={subLinkClass("#")} href="#">Delivery</Link>
                             <Link className={subLinkClass("#")} href="#">Adjustment</Link>
