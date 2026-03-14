@@ -10,7 +10,8 @@ import {
     IconStock, 
     IconHistory, 
     IconSettings, 
-    IconChevronDown 
+    IconChevronDown,
+    IconRefresh
 } from "./Icons";
 
 const Sidebar = () => {
@@ -73,6 +74,7 @@ const Sidebar = () => {
                         <div className="pl-12 space-y-3 mt-2">
                             <Link className={subLinkClass("#")} href="#">Receipt</Link>
                             <Link className={subLinkClass("#")} href="#">Delivery</Link>
+                            <Link className={subLinkClass("/dashboard/transfers")} href="/dashboard/transfers">Internal Transfer</Link>
                             <Link className={subLinkClass("#")} href="#">Adjustment</Link>
                         </div>
                     </div>

@@ -6,7 +6,7 @@ import { locations } from "./locationSchema.ts";
 export const productInform = pgTable("product_inform", {
     id: serial("id").primaryKey(),
     name: varchar("name").notNull(),
-    sku: varchar("sku").unique().notNull(),
+    sku: varchar("sku").notNull(),
     category: varchar("category").notNull(),
     warehouse_code: varchar("warehouse_code").references(() => warehouses.code).notNull(),
     location_code: varchar("location_code").references(() => locations.code).notNull(),

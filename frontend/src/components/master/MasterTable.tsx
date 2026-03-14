@@ -23,6 +23,7 @@ interface MasterTableProps {
     searchTerm: string;
     onSearchChange: (value: string) => void;
     isLoading?: boolean;
+    addLabel?: string;
 }
 
 const MasterTable: React.FC<MasterTableProps> = ({
@@ -34,7 +35,8 @@ const MasterTable: React.FC<MasterTableProps> = ({
     onAdd,
     searchTerm,
     onSearchChange,
-    isLoading = false
+    isLoading = false,
+    addLabel = "+ Add New"
 }) => {
     return (
         <div className="bg-white rounded-[2.5rem] border border-slate-100 shadow-[0_12px_44px_rgba(0,0,0,0.03)] overflow-hidden">
@@ -62,7 +64,7 @@ const MasterTable: React.FC<MasterTableProps> = ({
                         onClick={onAdd}
                         className="px-8 py-3.5 bg-[#ec5b13] text-white rounded-2xl font-black text-[14px] shadow-xl shadow-orange-200 hover:scale-[1.02] active:scale-95 transition-all"
                     >
-                        + Add New
+                        {addLabel}
                     </button>
                 </div>
             </div>
