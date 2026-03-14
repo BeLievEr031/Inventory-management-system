@@ -26,9 +26,10 @@ const LoginForm = () => {
 
             console.log("Login Success:", response.data);
             
-            // Store user info if needed
+            // Store user info and token for subsequent requests
             if (typeof window !== "undefined" && response.data.data) {
-                localStorage.setItem("user", JSON.stringify(response.data.data));
+                localStorage.setItem("user", JSON.stringify(response.data.data.user));
+                localStorage.setItem("token", response.data.data.token);
             }
 
             // Redirect to dashboard (assuming /dashboard exists)

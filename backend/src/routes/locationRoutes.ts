@@ -90,6 +90,27 @@ locationRouter.get(
 
 /**
  * @swagger
+ * /locations:
+ *   get:
+ *     summary: Get all locations for the authenticated user
+ *     tags: [Locations]
+ *     security:
+ *       - cookieAuth: []
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: List of locations
+ *       401:
+ *         description: Unauthorized
+ */
+locationRouter.get(
+    "/locations", 
+    authMiddleware, 
+    locationController.getAllLocations.bind(locationController)
+);
+
+/**
+ * @swagger
  * /locations/{id}:
  *   get:
  *     summary: Get a specific location by ID
