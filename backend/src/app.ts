@@ -6,6 +6,7 @@ import userRouter from "./routes/userRoutes.ts";
 import warehouseRoutes from "./routes/warehouseRoutes.ts";
 import locationRoutes from "./routes/locationRoutes.ts";
 import productRoutes from "./routes/productRoutes.ts";
+import receiptRouter from "./routes/receiptRoutes.ts";
 
 
 dotenv.config();
@@ -24,6 +25,7 @@ app.use(BASE_API, userRouter);
 app.use(BASE_API, warehouseRoutes);
 app.use(BASE_API, locationRoutes);
 app.use(BASE_API, productRoutes);
+app.use(BASE_API, receiptRouter);
 
 // Global Error Handler
 import { errorHandler } from "./middlewares/errorHandler.ts";
