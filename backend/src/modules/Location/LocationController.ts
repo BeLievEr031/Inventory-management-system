@@ -43,6 +43,17 @@ class LocationController {
         }
     }
 
+    async getAllLocations(req: AuthRequest, res: Response, next: NextFunction): Promise<any> {
+        try {
+            const userId = req.user.id;
+            const result = await this.locationService.getAllLocations(userId);
+            
+            return res.status(200).json({ data: result });
+        } catch (error) {
+            next(error);
+        }
+    }
+
     async getLocationById(req: AuthRequest, res: Response, next: NextFunction): Promise<any> {
         try {
             const locationId = parseInt(req.params.id as string);

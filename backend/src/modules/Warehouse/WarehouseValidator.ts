@@ -8,7 +8,7 @@ export const createWarehouseValidation = [
     body("code")
         .trim()
         .notEmpty().withMessage("Warehouse code is required")
-        .isAlphanumeric().withMessage("Warehouse code must be alphanumeric")
+        .matches(/^[A-Za-z0-9_-]+$/).withMessage("Warehouse code can only contain letters, numbers, hyphens, and underscores")
         .isLength({ min: 3, max: 20 }).withMessage("Code must be between 3 and 20 characters"),
 ];
 
@@ -20,6 +20,6 @@ export const updateWarehouseValidation = [
     body("code")
         .optional()
         .trim()
-        .isAlphanumeric().withMessage("Warehouse code must be alphanumeric")
+        .matches(/^[A-Za-z0-9_-]+$/).withMessage("Warehouse code can only contain letters, numbers, hyphens, and underscores")
         .isLength({ min: 3, max: 20 }).withMessage("Code must be between 3 and 20 characters"),
 ];

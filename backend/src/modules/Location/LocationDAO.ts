@@ -1,6 +1,7 @@
 import { eq } from "drizzle-orm";
 import { db } from "../../db/index.ts";
 import { locations } from "../../db/schemas/locationSchema.ts";
+import { warehouses } from "../../db/schemas/warehouseSchema.ts";
 import type { ICreateLocationRequest, IUpdateLocationRequest } from "./LocationInterface.ts";
 
 class LocationDAO {
@@ -22,6 +23,20 @@ class LocationDAO {
 
     async getAllByWarehouse(warehouseCode: string) {
         return await db.select().from(locations).where(eq(locations.warehouse_code, warehouseCode));
+    }
+
+    async getAll(userId: number) {
+        return await db.select({
+            id: locations.id,
+            warehouse_code: locations.warehouse_code,
+            name: locations.name,
+            code: locations.code,
+            created_at: locations.created_at,
+            updated_at: locations.updated_at
+        })
+        .from(locations)
+        .innerJoin(warehouses, eq(locations.warehouse_code, warehouses.code))
+        .where(eq(warehouses.user_id, userId));
     }
 
     async getById(id: number) {

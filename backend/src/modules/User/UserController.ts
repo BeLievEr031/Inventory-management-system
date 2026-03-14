@@ -48,8 +48,14 @@ class UserController {
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
             });
 
-            // Return user information without the token
-            return res.status(200).json({ message: "Login successful", data: result.user });
+            // Return user information with the token for fallback storage
+            return res.status(200).json({ 
+                message: "Login successful", 
+                data: {
+                    user: result.user,
+                    token: result.token
+                }
+            });
         } catch (error: any) {
             next(createHttpError(401, error.message)); // Wrap generic Error into a 401 HttpError
         }

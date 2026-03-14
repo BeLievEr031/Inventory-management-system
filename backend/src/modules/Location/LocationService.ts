@@ -43,6 +43,10 @@ class LocationService {
         return await this.locationDAO.getAllByWarehouse(warehouseCode);
     }
 
+    async getAllLocations(userId: number) {
+        return await this.locationDAO.getAll(userId);
+    }
+
     async getLocationById(id: number, userId: number) {
         const location = await this.locationDAO.getById(id);
         if (!location) {
