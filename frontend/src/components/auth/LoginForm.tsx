@@ -3,17 +3,43 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import api from "@/lib/api";
 
 const LoginForm = () => {
     const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const [loginId, setLoginId] = useState("");
     const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log("Login Attempt:", { loginId, password, rememberMe });
-        // Handle login logic here
+        setError("");
+        setLoading(true);
+
+        try {
+            const response = await api.post("/user/login", {
+                login_id: loginId,
+                password: password
+            });
+
+            console.log("Login Success:", response.data);
+            
+            // Store user info if needed
+            if (typeof window !== "undefined" && response.data.data) {
+                localStorage.setItem("user", JSON.stringify(response.data.data));
+            }
+
+            // Redirect to dashboard (assuming /dashboard exists)
+            window.location.href = "/dashboard";
+        } catch (err: any) {
+            const message = err.response?.data?.error?.message || err.response?.data?.message || err.message || "Login failed";
+            setError(message);
+            console.error("Login Error:", err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const EyeIcon = () => (
@@ -49,6 +75,12 @@ const LoginForm = () => {
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-6">
+                    {error && (
+                        <div className="bg-red-50 border-l-4 border-red-500 p-3 rounded shadow-sm">
+                            <p className="text-red-700 text-sm font-semibold">{error}</p>
+                        </div>
+                    )}
+
                     {/* Login ID Input */}
                     <div>
                         <label
@@ -71,6 +103,7 @@ const LoginForm = () => {
                                 className="bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-teal-500 focus:border-teal-500 block w-full pl-11 p-3 transition-all duration-200 outline-none"
                                 placeholder="Enter your ID"
                                 required
+                                disabled={loading}
                             />
                         </div>
                     </div>
@@ -97,11 +130,13 @@ const LoginForm = () => {
                                 className="bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-teal-500 focus:border-teal-500 block w-full pl-11 pr-11 p-3 transition-all duration-200 outline-none"
                                 placeholder="••••••••"
                                 required
+                                disabled={loading}
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
                                 className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-gray-400 hover:text-teal-600 transition-colors duration-200"
+                                disabled={loading}
                             >
                                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                             </button>
@@ -116,6 +151,7 @@ const LoginForm = () => {
                                 checked={rememberMe}
                                 onChange={(e) => setRememberMe(e.target.checked)}
                                 className="h-4 w-4 text-teal-600 focus:ring-teal-500 border-gray-300 rounded cursor-pointer transition-all"
+                                disabled={loading}
                             />
                             <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 cursor-pointer hover:text-gray-900 transition-colors duration-200 font-medium">
                                 Remember me
@@ -128,9 +164,10 @@ const LoginForm = () => {
 
                     <button
                         type="submit"
-                        className="w-full text-white bg-teal-600 hover:bg-teal-700 focus:ring-4 focus:outline-none focus:ring-teal-300 font-bold rounded-xl text-md px-5 py-4 text-center transition-all duration-200 shadow-lg hover:shadow-teal-500/30 transform active:scale-[0.98] tracking-wide"
+                        disabled={loading}
+                        className="w-full text-white bg-teal-600 hover:bg-teal-700 focus:ring-4 focus:outline-none focus:ring-teal-300 font-bold rounded-xl text-md px-5 py-4 text-center transition-all duration-200 shadow-lg hover:shadow-teal-500/30 transform active:scale-[0.98] tracking-wide disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                        SIGN IN
+                        {loading ? "SIGNING IN..." : "SIGN IN"}
                     </button>
 
                     <div className="text-center text-sm text-gray-500 mt-6 font-medium">

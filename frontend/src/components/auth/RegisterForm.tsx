@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import api from "@/lib/api";
 
 const RegisterForm = () => {
     const [loginId, setLoginId] = useState("");
@@ -11,6 +12,7 @@ const RegisterForm = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [error, setError] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const validateForm = () => {
         if (!loginId || !email || !password || !confirmPassword) {
@@ -36,8 +38,25 @@ const RegisterForm = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (validateForm()) {
-            console.log("Register Attempt:", { loginId, email, password });
-            // Handle registration logic here
+            setLoading(true);
+            try {
+                const response = await api.post("/user/register", {
+                    login_id: loginId,
+                    email: email,
+                    password: password
+                });
+
+                console.log("Register Success:", response.data);
+                
+                // Redirect to login page
+                window.location.href = "/login";
+            } catch (err: any) {
+                const message = err.response?.data?.error?.message || err.response?.data?.message || err.message || "Registration failed";
+                setError(message);
+                console.error("Register Error:", err);
+            } finally {
+                setLoading(false);
+            }
         }
     };
 
@@ -50,7 +69,7 @@ const RegisterForm = () => {
 
     const EyeOffIcon = () => (
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.542-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268-2.943 9.542 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
         </svg>
     );
 
@@ -75,7 +94,7 @@ const RegisterForm = () => {
 
                 <form onSubmit={handleSubmit} className="space-y-4">
                     {error && (
-                        <div className="bg-red-50 border-l-4 border-red-500 p-3 mb-2 rounded shadow-sm animate-pulse">
+                        <div className="bg-red-50 border-l-4 border-red-500 p-3 mb-2 rounded shadow-sm">
                             <p className="text-red-700 text-xs font-semibold uppercase">{error}</p>
                         </div>
                     )}
@@ -96,6 +115,7 @@ const RegisterForm = () => {
                                 className="bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-teal-500 focus:border-teal-500 block w-full pl-10 p-2.5 transition-all outline-none text-sm"
                                 placeholder="Choose an ID"
                                 required
+                                disabled={loading}
                             />
                         </div>
                     </div>
@@ -116,6 +136,7 @@ const RegisterForm = () => {
                                 className="bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-teal-500 focus:border-teal-500 block w-full pl-10 p-2.5 transition-all outline-none text-sm"
                                 placeholder="name@company.com"
                                 required
+                                disabled={loading}
                             />
                         </div>
                     </div>
@@ -136,11 +157,13 @@ const RegisterForm = () => {
                                 className="bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-teal-500 focus:border-teal-500 block w-full pl-10 pr-10 p-2.5 transition-all outline-none text-sm"
                                 placeholder="••••••••"
                                 required
+                                disabled={loading}
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
                                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-teal-600 transition-colors"
+                                disabled={loading}
                             >
                                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                             </button>
@@ -163,11 +186,13 @@ const RegisterForm = () => {
                                 className="bg-gray-50 border border-gray-200 text-gray-900 rounded-xl focus:ring-teal-500 focus:border-teal-500 block w-full pl-10 pr-10 p-2.5 transition-all outline-none text-sm"
                                 placeholder="Retype password"
                                 required
+                                disabled={loading}
                             />
                             <button
                                 type="button"
                                 onClick={() => setShowPassword(!showPassword)}
                                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-teal-600 transition-colors"
+                                disabled={loading}
                             >
                                 {showPassword ? <EyeOffIcon /> : <EyeIcon />}
                             </button>
@@ -176,9 +201,10 @@ const RegisterForm = () => {
 
                     <button
                         type="submit"
-                        className="w-full text-white bg-teal-600 hover:bg-teal-700 focus:ring-4 focus:outline-none font-bold rounded-xl text-sm px-5 py-3 text-center transition-all duration-200 shadow-lg mt-4 active:scale-95"
+                        disabled={loading}
+                        className="w-full text-white bg-teal-600 hover:bg-teal-700 focus:ring-4 focus:outline-none font-bold rounded-xl text-sm px-5 py-3 text-center transition-all duration-200 shadow-lg mt-4 active:scale-95 disabled:opacity-70 disabled:cursor-not-allowed"
                     >
-                        CREATE ACCOUNT
+                        {loading ? "CREATING ACCOUNT..." : "CREATE ACCOUNT"}
                     </button>
 
                     <div className="text-center text-sm text-gray-500 mt-4">
