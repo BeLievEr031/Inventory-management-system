@@ -31,18 +31,25 @@ const TransferManagement = () => {
     const fetchData = async () => {
         try {
             setIsLoading(true);
-            const [transRes, whRes, locRes, prodRes] = await Promise.all([
+            const results = await Promise.allSettled([
                 api.get("/transfers"),
                 api.get("/warehouses"),
                 api.get("/locations"),
                 api.get("/products")
             ]);
-            setTransfers(transRes.data?.data || []);
-            setWarehouses(whRes.data?.data || []);
-            setLocations(locRes.data?.data || []);
-            setProducts(prodRes.data?.data || []);
+
+            if (results[0].status === 'fulfilled') setTransfers(results[0].value.data?.data || []);
+            if (results[1].status === 'fulfilled') setWarehouses(results[1].value.data?.data || []);
+            if (results[2].status === 'fulfilled') setLocations(results[2].value.data?.data || []);
+            if (results[3].status === 'fulfilled') setProducts(results[3].value.data?.data || []);
+            
+            // Check if any critical data failed
+            if (results[1].status === 'rejected') console.error("Warehouses failed to load");
+            if (results[2].status === 'rejected') console.error("Locations failed to load");
+            
         } catch (err) {
             console.error("Failed to fetch data", err);
+            setError("Failed to load dashboard data. Please refresh.");
         } finally {
             setIsLoading(false);
         }
@@ -213,17 +220,17 @@ const TransferManagement = () => {
                                 onChange={(e) => setCurrentTransfer({...currentTransfer, source_warehouse_code: e.target.value, source_location_code: ""})}
                                 className="w-full px-7 py-4 bg-white border-none rounded-2xl text-[15px] font-bold text-slate-700 outline-none shadow-sm"
                             >
-                                <option value="">Select Warehouse</option>
-                                {warehouses.map((wh: any) => <option key={wh.id} value={wh.code}>{wh.name}</option>)}
+                                <option value="">{warehouses.length === 0 ? "No Warehouses Found" : "Select Warehouse"}</option>
+                                {warehouses.map((wh: any) => <option key={wh.id} value={wh.code}>{wh.name} ({wh.code})</option>)}
                             </select>
                             <select 
                                 value={currentTransfer.source_location_code}
                                 onChange={(e) => setCurrentTransfer({...currentTransfer, source_location_code: e.target.value})}
                                 className="w-full px-7 py-4 bg-white border-none rounded-2xl text-[15px] font-bold text-slate-700 outline-none shadow-sm"
                             >
-                                <option value="">Select Location</option>
+                                <option value="">{!currentTransfer.source_warehouse_code ? "Select Warehouse First" : locations.filter((l: any) => l.warehouse_code === currentTransfer.source_warehouse_code).length === 0 ? "No Locations Found" : "Select Location"}</option>
                                 {locations.filter((l: any) => l.warehouse_code === currentTransfer.source_warehouse_code).map((loc: any) => (
-                                    <option key={loc.id} value={loc.code}>{loc.name}</option>
+                                    <option key={loc.id} value={loc.code}>{loc.name} ({loc.code})</option>
                                 ))}
                             </select>
                         </div>
@@ -240,17 +247,17 @@ const TransferManagement = () => {
                                 onChange={(e) => setCurrentTransfer({...currentTransfer, destination_warehouse_code: e.target.value, destination_location_code: ""})}
                                 className="w-full px-7 py-4 bg-white border-none rounded-2xl text-[15px] font-bold text-slate-700 outline-none shadow-sm"
                             >
-                                <option value="">Select Warehouse</option>
-                                {warehouses.map((wh: any) => <option key={wh.id} value={wh.code}>{wh.name}</option>)}
+                                <option value="">{warehouses.length === 0 ? "No Warehouses Found" : "Select Warehouse"}</option>
+                                {warehouses.map((wh: any) => <option key={wh.id} value={wh.code}>{wh.name} ({wh.code})</option>)}
                             </select>
                             <select 
                                 value={currentTransfer.destination_location_code}
                                 onChange={(e) => setCurrentTransfer({...currentTransfer, destination_location_code: e.target.value})}
                                 className="w-full px-7 py-4 bg-white border-none rounded-2xl text-[15px] font-bold text-slate-700 outline-none shadow-sm"
                             >
-                                <option value="">Select Location</option>
+                                <option value="">{!currentTransfer.destination_warehouse_code ? "Select Warehouse First" : locations.filter((l: any) => l.warehouse_code === currentTransfer.destination_warehouse_code).length === 0 ? "No Locations Found" : "Select Location"}</option>
                                 {locations.filter((l: any) => l.warehouse_code === currentTransfer.destination_warehouse_code).map((loc: any) => (
-                                    <option key={loc.id} value={loc.code}>{loc.name}</option>
+                                    <option key={loc.id} value={loc.code}>{loc.name} ({loc.code})</option>
                                 ))}
                             </select>
                         </div>
