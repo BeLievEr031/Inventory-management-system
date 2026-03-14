@@ -8,7 +8,21 @@
   --sidebar-border: #e2e8f0;
 }
 
-<<<<<<< Updated upstream
+@layer utilities {
+  .bg-flowims-gradient {
+    background: linear-gradient(135deg, #0d9488 0%, #1e40af 100%);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
 html,
 body {
   margin: 0;
@@ -16,7 +30,7 @@ body {
   background-color: #f8f9fb;
   color: #111827;
   font-family: sans-serif;
-=======
+}
 @theme {
   --color-primary: #ec5b13;
   --color-background-light: #f8f6f6;
@@ -41,5 +55,4 @@ body {
     white-space: nowrap;
     direction: ltr;
   }
->>>>>>> Stashed changes
 }
