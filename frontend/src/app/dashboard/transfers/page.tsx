@@ -9,10 +9,10 @@ import api from "@/lib/api";
 import { IconRefresh } from "@/components/layout/Icons";
 
 const TransferManagement = () => {
-    const [transfers, setTransfers] = useState([]);
-    const [warehouses, setWarehouses] = useState([]);
-    const [locations, setLocations] = useState([]);
-    const [products, setProducts] = useState([]);
+    const [transfers, setTransfers] = useState<any[]>([]);
+    const [warehouses, setWarehouses] = useState<any[]>([]);
+    const [locations, setLocations] = useState<any[]>([]);
+    const [products, setProducts] = useState<any[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
@@ -43,10 +43,9 @@ const TransferManagement = () => {
             if (results[2].status === 'fulfilled') setLocations(results[2].value.data?.data || []);
             if (results[3].status === 'fulfilled') setProducts(results[3].value.data?.data || []);
             
-            // Check if any critical data failed
-            if (results[1].status === 'rejected') console.error("Warehouses failed to load");
-            if (results[2].status === 'rejected') console.error("Locations failed to load");
-            
+            if (results.some(r => r.status === 'rejected')) {
+                console.error("Some requests failed", results);
+            }
         } catch (err) {
             console.error("Failed to fetch data", err);
             setError("Failed to load dashboard data. Please refresh.");
@@ -58,6 +57,23 @@ const TransferManagement = () => {
     useEffect(() => {
         fetchData();
     }, []);
+
+    // Auto-select source warehouse if only one exists
+    useEffect(() => {
+        if (isModalOpen && !currentTransfer.source_warehouse_code && warehouses.length === 1) {
+            setCurrentTransfer(prev => ({ ...prev, source_warehouse_code: warehouses[0].code }));
+        }
+    }, [isModalOpen, warehouses]);
+
+    // Auto-select source location if only one exists for selected warehouse
+    useEffect(() => {
+        if (isModalOpen && currentTransfer.source_warehouse_code && !currentTransfer.source_location_code) {
+            const available = locations.filter((l: any) => l.warehouse_code === currentTransfer.source_warehouse_code);
+            if (available.length === 1) {
+                setCurrentTransfer(prev => ({ ...prev, source_location_code: available[0].code }));
+            }
+        }
+    }, [isModalOpen, currentTransfer.source_warehouse_code, locations]);
 
     const filteredData = transfers.filter((item: any) => 
         item.reference.toLowerCase().includes(searchTerm.toLowerCase()) ||
