@@ -46,7 +46,7 @@ const userController = new UserController();
  *       409:
  *         description: User already exists
  */
-userRouter.post("/user/register", registerValidation, userController.register);
+userRouter.post("/user/register", registerValidation, userController.register.bind(userController));
 
 /**
  * @swagger
@@ -75,7 +75,7 @@ userRouter.post("/user/register", registerValidation, userController.register);
  *       401:
  *         description: Invalid credentials
  */
-userRouter.post("/user/login", loginValidation, userController.login);
+userRouter.post("/user/login", loginValidation, userController.login.bind(userController));
 
 /**
  * @swagger
@@ -103,7 +103,7 @@ userRouter.post("/user/login", loginValidation, userController.login);
  *       404:
  *         description: User not found
  */
-userRouter.post("/user/forget-password", forgetPasswordValidation, userController.forgetPassword);
+userRouter.post("/user/forget-password", forgetPasswordValidation, userController.forgetPassword.bind(userController));
 
 /**
  * @swagger
@@ -120,6 +120,6 @@ userRouter.post("/user/forget-password", forgetPasswordValidation, userControlle
  *       401:
  *         description: Refresh token missing or invalid
  */
-userRouter.post("/user/refresh-token", authMiddleware, userController.refreshToken);
+userRouter.post("/user/refresh-token", authMiddleware, userController.refreshToken.bind(userController));
 
 export default userRouter;
